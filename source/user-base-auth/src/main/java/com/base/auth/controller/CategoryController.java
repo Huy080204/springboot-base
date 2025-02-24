@@ -5,6 +5,7 @@ import com.base.auth.dto.ErrorCode;
 import com.base.auth.dto.ResponseListDto;
 import com.base.auth.form.category.CreateCategoryForm;
 import com.base.auth.form.category.UpdateCategoryForm;
+import com.base.auth.mapper.CategoryMapper;
 import com.base.auth.model.Category;
 import com.base.auth.model.criteria.CategoryCriteria;
 import com.base.auth.repository.CategoryRepository;
@@ -29,7 +30,10 @@ public class CategoryController extends ABasicController {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PostMapping(value = "/create_category", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<String> createCategory(@Valid @RequestBody CreateCategoryForm createCategoryForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         Category category = categoryRepository.findCategoryByName(createCategoryForm.getName());
@@ -38,19 +42,14 @@ public class CategoryController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.CATEGORY_ERROR_EXIST);
             return apiMessageDto;
         }
-        category = new Category();
-        category.setName(createCategoryForm.getName());
-        category.setDescription(createCategoryForm.getDescription());
-        category.setImage(createCategoryForm.getImage());
-        category.setOrdering(createCategoryForm.getOrdering());
-        category.setKind(createCategoryForm.getKind());
+        category = categoryMapper.fromCreateCategory(createCategoryForm);
         categoryRepository.save(category);
 
         apiMessageDto.setMessage("Create category success");
         return apiMessageDto;
     }
 
-    @PutMapping(value = "/update_category", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<String> updateCategory(@Valid @RequestBody UpdateCategoryForm updateCategoryForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         Category category = categoryRepository.findById(updateCategoryForm.getCategoryId()).orElse(null);
@@ -59,10 +58,7 @@ public class CategoryController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.CATEGORY_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        category.setName(updateCategoryForm.getName());
-        category.setDescription(updateCategoryForm.getDescription());
-        category.setImage(updateCategoryForm.getImage());
-        category.setOrdering(updateCategoryForm.getOrdering());
+        categoryMapper.mappingForUpdateServiceCategory(updateCategoryForm, category);
         categoryRepository.save(category);
 
         apiMessageDto.setMessage("Update category success");
