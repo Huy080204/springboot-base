@@ -5,6 +5,7 @@ import com.base.auth.dto.ErrorCode;
 import com.base.auth.dto.ResponseListDto;
 import com.base.auth.form.news.CreateNewsForm;
 import com.base.auth.form.news.UpdateNewsForm;
+import com.base.auth.mapper.NewsMapper;
 import com.base.auth.model.Category;
 import com.base.auth.model.News;
 import com.base.auth.model.criteria.NewsCriteria;
@@ -31,7 +32,10 @@ public class NewsController {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PostMapping(value = "/create_news", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Autowired
+    private NewsMapper newsMapper;
+
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<String> createNews(@Valid @RequestBody CreateNewsForm createNewsForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
 
@@ -49,12 +53,9 @@ public class NewsController {
             return apiMessageDto;
         }
 
+        newsMapper.fromCreateNewsFormToEntity(createNewsForm);
+
         news = new News();
-        news.setTitle(createNewsForm.getTitle());
-        news.setContent(createNewsForm.getContent());
-        news.setAvatar(createNewsForm.getAvatar());
-        news.setBanner(createNewsForm.getBanner());
-        news.setDescription(createNewsForm.getDescription());
         news.setCategory(category);
 
         newsRepository.save(news);
@@ -63,7 +64,7 @@ public class NewsController {
         return apiMessageDto;
     }
 
-    @PutMapping(value = "/update_news", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<String> updateCategory(@Valid @RequestBody UpdateNewsForm updateNewsForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
 
@@ -80,14 +81,7 @@ public class NewsController {
             apiMessageDto.setCode(ErrorCode.CATEGORY_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-
-        news.setTitle(updateNewsForm.getTitle());
-        news.setContent(updateNewsForm.getContent());
-        news.setAvatar(updateNewsForm.getAvatar());
-        news.setBanner(updateNewsForm.getBanner());
-        news.setDescription(updateNewsForm.getDescription());
-        news.setStatus(updateNewsForm.getStatus());
-        news.setPinTop(updateNewsForm.getPinTop());
+        newsMapper.updateNewsFromUpdateNewsForm(updateNewsForm, news);
         news.setCategory(category);
 
         newsRepository.save(news);
@@ -121,7 +115,7 @@ public class NewsController {
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<String> updateCategory(@PathVariable("id") Long id) {
+    public ApiResponse<String> delete(@PathVariable("id") Long id) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         News news = newsRepository.findById(id).orElse(null);
         if (news == null) {

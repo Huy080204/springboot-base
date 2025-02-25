@@ -1,6 +1,5 @@
 package com.base.auth.form.nation;
 
-import com.base.auth.validation.NationKind;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -16,12 +15,12 @@ public class UpdateNationForm {
     @NotEmpty(message = "name cant not be null")
     @ApiModelProperty(name = "name", required = true)
     private String name;
-    @NotEmpty(message = "postCode cant not be null")
-    @ApiModelProperty(name = "postCode", required = true)
-    private String postCode;
-    @NotNull(message = "status cant not be null")
-    @ApiModelProperty(name = "status", required = true)
-    private Long status;
-    @ApiModelProperty(name = "parentId")
-    private Long parentId;
+
+    @NotEmpty(message = "description cant not be null")
+    @ApiModelProperty(name = "description", required = true)
+    private String description;
+
+    @NotNull(message = "type cant not be null")
+    @ApiModelProperty(name = "type", required = true)
+    private Integer type;
 }

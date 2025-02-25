@@ -52,4 +52,8 @@ public class Account extends Auditable<String> {
 
     @Column(name = "is_super_admin")
     private Boolean isSuperAdmin = false;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.EAGER)
+    private Customer customer;
 }
