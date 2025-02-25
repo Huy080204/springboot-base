@@ -1,18 +1,14 @@
 package com.base.auth.mapper;
 
-import com.base.auth.dto.category.CategoryDto;
-import com.base.auth.form.category.CreateCategoryForm;
-import com.base.auth.form.category.UpdateCategoryForm;
+import com.base.auth.dto.customer.CustomerDto;
 import com.base.auth.form.customer.CreateCustomerForm;
 import com.base.auth.form.customer.UpdateCustomerForm;
-import com.base.auth.model.Category;
 import com.base.auth.model.Customer;
 import org.mapstruct.*;
 
-import java.util.List;
-
-
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses = {AccountMapper.class, NationMapper.class})
 public interface CustomerMapper {
 
     @Mapping(source = "birthDay", target = "birthDay")
@@ -28,5 +24,17 @@ public interface CustomerMapper {
     @Named("mappingForUpdateCustomer")
     @BeanMapping(ignoreByDefault = true)
     void mappingForUpdateCustomer(UpdateCustomerForm updateCustomerForm, @MappingTarget Customer customer);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToDto")
+    @Mapping(source = "birthDay", target = "birthDay")
+    @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "address", target = "address")
+    @Mapping(source = "province", target = "province", qualifiedByName = "fromNationToDto")
+    @Mapping(source = "district", target = "district", qualifiedByName = "fromNationToDto")
+    @Mapping(source = "commune", target = "commune", qualifiedByName = "fromNationToDto")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromEntityToCustomerDto")
+    CustomerDto fromCustomerToDto(Customer customer);
 
 }

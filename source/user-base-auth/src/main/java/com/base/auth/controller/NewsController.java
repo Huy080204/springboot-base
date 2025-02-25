@@ -115,7 +115,7 @@ public class NewsController {
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<String> updateCategory(@PathVariable("id") Long id) {
+    public ApiResponse<String> delete(@PathVariable("id") Long id) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         News news = newsRepository.findById(id).orElse(null);
         if (news == null) {

@@ -2,10 +2,10 @@ package com.base.auth.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Customer extends Auditable<String> {
+
     @Id
-    @GenericGenerator(name = "idGenerator", strategy = "com.base.auth.service.id.IdGenerator")
-    @GeneratedValue(generator = "idGenerator")
     private Long id;
 
+    @MapsId
     @OneToOne(fetch = FetchType.EAGER)
     private Account account;
 
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
     private Integer gender;
     private String address;
 

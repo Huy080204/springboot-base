@@ -70,6 +70,7 @@ public class ErrorCode {
      * */
     public static final String CATEGORY_ERROR_NOT_FOUND = "ERROR-CATEGORY-0000";
     public static final String CATEGORY_ERROR_EXIST = "ERROR-CATEGORY-0001";
+    public static final String CATEGORY_ERROR_CANT_DELETE_RELATIONSHIP_WITH_NEWS = "ERROR-CATEGORY-0002";
 
     /**
      * Starting error code News

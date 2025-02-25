@@ -24,7 +24,7 @@ public class UpdateAccountAdminForm {
     @ApiModelProperty(name = "fullName", required = true)
     private String fullName;
     @ApiModelProperty(name = "avatarPath")
-    private String avatarPath ;
+    private String avatarPath;
     @NotNull(message = "groupId cant not be null")
     @ApiModelProperty(name = "groupId", required = true)
     private Long groupId;

@@ -9,8 +9,8 @@ public class NationDto {
     private Long id;
     @ApiModelProperty(name = "name")
     private String name;
-    @ApiModelProperty(name = "postCode")
-    private String postCode;
-    @ApiModelProperty(name = "kind")
-    private Integer kind;
+    @ApiModelProperty(name = "description")
+    private String description;
+    @ApiModelProperty(name = "type")
+    private Integer type;
 }

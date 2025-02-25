@@ -35,7 +35,7 @@ import java.util.Date;
 @RequestMapping("/v1/account")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
-public class AccountController extends ABasicController{
+public class AccountController extends ABasicController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -104,7 +104,7 @@ public class AccountController extends ABasicController{
         }
         account.setFullName(updateAccountAdminForm.getFullName());
         if (StringUtils.isNoneBlank(updateAccountAdminForm.getAvatarPath())) {
-            if(!updateAccountAdminForm.getAvatarPath().equals(account.getAvatarPath())){
+            if (!updateAccountAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
                 //delete old image
                 userBaseApiService.deleteFile(account.getAvatarPath());
             }
@@ -143,7 +143,7 @@ public class AccountController extends ABasicController{
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        if (account.getIsSuperAdmin()){
+        if (account.getIsSuperAdmin()) {
             apiMessageDto.setResult(false);
             apiMessageDto.setMessage("Not allow delete super admin");
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_NOT_ALLOW_DELETE_SUPPER_ADMIN);
@@ -175,14 +175,14 @@ public class AccountController extends ABasicController{
     public ApiResponse<String> updateProfileAdmin(final HttpServletRequest request, @Valid @RequestBody UpdateProfileAdminForm updateProfileAdminForm, BindingResult bindingResult) {
 
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
-        long id =getCurrentUser();
+        long id = getCurrentUser();
         var account = accountRepository.findById(id).orElse(null);
         if (account == null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
-        if(!passwordEncoder.matches(updateProfileAdminForm.getOldPassword(), account.getPassword())){
+        if (!passwordEncoder.matches(updateProfileAdminForm.getOldPassword(), account.getPassword())) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_WRONG_PASSWORD);
             return apiMessageDto;
@@ -202,7 +202,7 @@ public class AccountController extends ABasicController{
     }
 
     @PostMapping(value = "/request_forget_password", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<ForgetPasswordDto> requestForgetPassword(@Valid @RequestBody RequestForgetPasswordForm forgetForm, BindingResult bindingResult){
+    public ApiResponse<ForgetPasswordDto> requestForgetPassword(@Valid @RequestBody RequestForgetPasswordForm forgetForm, BindingResult bindingResult) {
         ApiResponse<ForgetPasswordDto> apiMessageDto = new ApiResponse<>();
         Account account = accountRepository.findAccountByEmail(forgetForm.getEmail());
         if (account == null) {
@@ -218,25 +218,25 @@ public class AccountController extends ABasicController{
         accountRepository.save(account);
 
         //send email
-        userBaseApiService.sendEmail(account.getEmail(),"OTP: "+otp, "Reset password",false);
+        userBaseApiService.sendEmail(account.getEmail(), "OTP: " + otp, "Reset password", false);
 
         ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
-        String hash = AESUtils.encrypt (account.getId()+";"+otp, true);
+        String hash = AESUtils.encrypt(account.getId() + ";" + otp, true);
         forgetPasswordDto.setIdHash(hash);
 
         apiMessageDto.setResult(true);
         apiMessageDto.setData(forgetPasswordDto);
         apiMessageDto.setMessage("Request forget password successfull, please check email.");
-        return  apiMessageDto;
+        return apiMessageDto;
     }
 
     @PostMapping(value = "/forget_password", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<Long> forgetPassword(@Valid @RequestBody ForgetPasswordForm forgetForm, BindingResult bindingResult){
+    public ApiResponse<Long> forgetPassword(@Valid @RequestBody ForgetPasswordForm forgetForm, BindingResult bindingResult) {
         ApiResponse<Long> apiMessageDto = new ApiResponse<>();
 
-        String[] hash = AESUtils.decrypt(forgetForm.getIdHash(),true).split(";",2);
+        String[] hash = AESUtils.decrypt(forgetForm.getIdHash(), true).split(";", 2);
         Long id = ConvertUtils.convertStringToLong(hash[0]);
-        if(id <= 0){
+        if (id <= 0) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_WRONG_HASH_RESET_PASS);
             return apiMessageDto;
@@ -244,23 +244,23 @@ public class AccountController extends ABasicController{
 
 
         Account account = accountRepository.findById(id).orElse(null);
-        if (account == null ) {
+        if (account == null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
 
-        if(account.getAttemptCode() >= UserBaseConstant.MAX_ATTEMPT_FORGET_PWD){
+        if (account.getAttemptCode() >= UserBaseConstant.MAX_ATTEMPT_FORGET_PWD) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_LOCKED);
             return apiMessageDto;
         }
 
-        if(!account.getResetPwdCode().equals(forgetForm.getOtp()) ||
-                (new Date().getTime() - account.getResetPwdTime().getTime() >= UserBaseConstant.MAX_TIME_FORGET_PWD)){
+        if (!account.getResetPwdCode().equals(forgetForm.getOtp()) ||
+                (new Date().getTime() - account.getResetPwdTime().getTime() >= UserBaseConstant.MAX_TIME_FORGET_PWD)) {
 
             //tang so lan
-            account.setAttemptCode(account.getAttemptCode()+1);
+            account.setAttemptCode(account.getAttemptCode() + 1);
             accountRepository.save(account);
 
             apiMessageDto.setResult(false);

@@ -3,6 +3,7 @@ package com.base.auth.controller;
 import com.base.auth.dto.ApiResponse;
 import com.base.auth.dto.ErrorCode;
 import com.base.auth.dto.ResponseListDto;
+import com.base.auth.dto.nation.NationDto;
 import com.base.auth.form.customer.CreateCustomerForm;
 import com.base.auth.form.customer.UpdateCustomerForm;
 import com.base.auth.form.nation.CreateNationForm;
@@ -22,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/nation")
@@ -37,9 +40,14 @@ public class NationController extends ABasicController {
     @Autowired
     private NationRepository nationRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
     private NationMapper nationMapper;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('NAT_C')")
     public ApiResponse<String> create(@Valid @RequestBody CreateNationForm createNationForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
 
@@ -52,6 +60,7 @@ public class NationController extends ABasicController {
     }
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('NAT_U')")
     public ApiResponse<String> update(@Valid @RequestBody UpdateNationForm updateNationForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         Nation nation = nationRepository.findById(updateNationForm.getId()).orElse(null);
@@ -67,30 +76,38 @@ public class NationController extends ABasicController {
     }
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<Nation> get(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('NAT_V')")
+    public ApiResponse<NationDto> get(@PathVariable("id") Long id) {
         Nation nation = nationRepository.findById(id).orElse(null);
-        ApiResponse<Nation> apiMessageDto = new ApiResponse<>();
-        apiMessageDto.setData(nation);
+        NationDto nationDto = nationMapper.fromNationToDto(nation);
+        ApiResponse<NationDto> apiMessageDto = new ApiResponse<>();
+        apiMessageDto.setData(nationDto);
         apiMessageDto.setMessage("Get nation success");
         return apiMessageDto;
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<ResponseListDto<List<Nation>>> get(NationCriteria criteria, Pageable pageable) {
+    @PreAuthorize("hasRole('NAT_L')")
+    public ApiResponse<ResponseListDto<List<NationDto>>> get(NationCriteria criteria, Pageable pageable) {
         Page<Nation> pageData = nationRepository.findAll(criteria.getSpecification(), pageable);
 
-        ResponseListDto<List<Nation>> responseListDto = new ResponseListDto<>();
-        responseListDto.setContent(pageData.getContent());
+        ResponseListDto<List<NationDto>> responseListDto = new ResponseListDto<>();
+        responseListDto.setContent(
+                pageData.getContent().stream()
+                        .map(nationMapper::fromNationToDto)
+                        .collect(Collectors.toList())
+        );
         responseListDto.setTotalElements(pageData.getTotalElements());
         responseListDto.setTotalPages(pageData.getTotalPages());
 
-        ApiResponse<ResponseListDto<List<Nation>>> apiMessageDto = new ApiResponse<>();
+        ApiResponse<ResponseListDto<List<NationDto>>> apiMessageDto = new ApiResponse<>();
         apiMessageDto.setData(responseListDto);
         apiMessageDto.setMessage("Get list nations success");
         return apiMessageDto;
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('NAT_D')")
     public ApiResponse<String> delete(@PathVariable("id") Long id) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
         Nation nation = nationRepository.findById(id).orElse(null);
@@ -99,6 +116,13 @@ public class NationController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
+
+        if (customerRepository.countCustomerByNationId(id) > 0) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.NATION_ERROR_CANT_DELETE_RELATIONSHIP_WITH_ADDRESS);
+            return apiMessageDto;
+        }
+
         nationRepository.deleteById(id);
 
         apiMessageDto.setMessage("Delete nation success");
