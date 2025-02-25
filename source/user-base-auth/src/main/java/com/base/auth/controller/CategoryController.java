@@ -66,6 +66,13 @@ public class CategoryController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.CATEGORY_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
+        if (!category.getName().equals(updateCategoryForm.getName())) {
+            if (categoryRepository.existsByName(category.getName())) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.CATEGORY_ERROR_EXIST);
+                return apiMessageDto;
+            }
+        }
         categoryMapper.mappingForUpdateServiceCategory(updateCategoryForm, category);
         categoryRepository.save(category);
 

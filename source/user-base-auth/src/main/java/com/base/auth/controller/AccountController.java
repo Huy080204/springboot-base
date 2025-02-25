@@ -276,6 +276,6 @@ public class AccountController extends ABasicController {
 
         apiMessageDto.setResult(true);
         apiMessageDto.setMessage("Change password success.");
-        return  apiMessageDto;
+        return apiMessageDto;
     }
 }
