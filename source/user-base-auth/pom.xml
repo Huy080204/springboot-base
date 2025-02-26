@@ -293,7 +293,7 @@
 				<configuration>
 					<changeLogFile>${liquibase.changeLogFile}</changeLogFile>
 					<diffChangeLogFile>${basedir}/src/main/resources/liquibase/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
-					<outputChangeLogFile>${basedir}/src/main/resources/liquibase/db.changelog-1.1.0.xml</outputChangeLogFile>
+					<outputChangeLogFile>${basedir}/src/main/resources/liquibase/db.changelog-1.0.0.xml</outputChangeLogFile>
 					<driver>com.mysql.cj.jdbc.Driver</driver>
 					<url>jdbc:mysql://localhost:4000/db_user_base_auth</url>
 					<username>root</username>

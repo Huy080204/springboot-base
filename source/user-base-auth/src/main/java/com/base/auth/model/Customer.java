@@ -1,5 +1,6 @@
 package com.base.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -37,5 +38,9 @@ public class Customer extends Auditable<String> {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "commune_id")
     private Nation commune;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.EAGER)
+    private Cart cart;
 
 }

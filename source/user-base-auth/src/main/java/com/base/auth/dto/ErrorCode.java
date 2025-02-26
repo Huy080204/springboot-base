@@ -92,6 +92,20 @@ public class ErrorCode {
     public static final String USER_ERROR_LOGIN_FAILED = "ERROR-USER-0002";
 
     /**
+     * Starting error code PRODUCT
+     *
+     */
+    public static final String PRODUCT_ERROR_EXIST = "ERROR-PRODUCT-0000";
+    public static final String PRODUCT_ERROR_NOT_FOUND = "ERROR-PRODUCT-0001";
+
+    /**
+     * Starting error code PRODUCT
+     *
+     */
+    public static final String CART_ERROR_NOT_FOUND = "ERROR-CART-0000";
+    public static final String CART_ERROR_INVALID = "ERROR-CART-0001";
+
+    /**
      * Starting error code DATABASE_ERROR
      *
      */
