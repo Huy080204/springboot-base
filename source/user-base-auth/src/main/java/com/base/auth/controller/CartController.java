@@ -13,6 +13,8 @@ import com.base.auth.repository.CustomerRepository;
 import com.base.auth.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,15 +41,28 @@ public class CartController {
     private CustomerRepository customerRepository;
 
     @PostMapping("/update")
-    public ApiResponse<String> updateCart(@RequestParam Long customerId, @RequestBody List<ProductCartForm> productCartForms) {
+    public ApiResponse<String> updateCart(@RequestBody List<ProductCartForm> productCartForms) {
         ApiResponse<String> response = new ApiResponse<>();
 
+        // get username from context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            response.setResult(false);
+            response.setCode(ErrorCode.ACCOUNT_ERROR_LOGIN);
+            response.setMessage("User not authenticated");
+            return response;
+        }
+
+        String username = authentication.getName();
+
         // check customer exists
-        Customer customer = customerRepository.findById(customerId).orElse(null);
+        Customer customer = customerRepository.findCustomerByAccountUsername(username)
+                .orElse(null);
+
         if (customer == null) {
             response.setResult(false);
             response.setCode(ErrorCode.CUSTOMER_ERROR_NOT_FOUND);
-            response.setMessage("Customer not found: " + customerId);
+            response.setMessage("Customer not found");
             return response;
         }
 
@@ -79,7 +94,7 @@ public class CartController {
         }
 
         // find cart by customer id
-        Cart cart = cartRepository.findByCustomerId(customerId).orElse(null);
+        Cart cart = cartRepository.findByCustomerId(customer.getId()).orElse(null);
         if (cart == null) {
             response.setResult(false);
             response.setCode(ErrorCode.CART_ERROR_NOT_FOUND);

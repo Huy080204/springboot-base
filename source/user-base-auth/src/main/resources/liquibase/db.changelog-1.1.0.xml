@@ -73,22 +73,4 @@
     <changeSet author="Huy Pham (generated)" id="1740506161642-8">
         <addForeignKeyConstraint baseColumnNames="commune_id" baseTableName="db_user_base_customer" constraintName="FKq60aooc9d5qjwiw2mcsirvgjx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-9">
-        <dropTable tableName="oauth_access_token"/>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-10">
-        <dropTable tableName="oauth_approvals"/>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-11">
-        <dropTable tableName="oauth_client_details"/>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-12">
-        <dropTable tableName="oauth_client_token"/>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-13">
-        <dropTable tableName="oauth_code"/>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-14">
-        <dropTable tableName="oauth_refresh_token"/>
-    </changeSet>
 </databaseChangeLog>
