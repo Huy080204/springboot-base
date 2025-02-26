@@ -2,6 +2,7 @@ package com.base.auth.controller;
 
 import com.base.auth.dto.ApiResponse;
 import com.base.auth.dto.ErrorCode;
+import com.base.auth.form.product.ProductCartForm;
 import com.base.auth.model.Cart;
 import com.base.auth.model.CartItem;
 import com.base.auth.model.Customer;
@@ -38,7 +39,7 @@ public class CartController {
     private CustomerRepository customerRepository;
 
     @PostMapping("/update")
-    public ApiResponse<String> updateCart(@RequestParam Long customerId, @RequestBody List<Long> productIds) {
+    public ApiResponse<String> updateCart(@RequestParam Long customerId, @RequestBody List<ProductCartForm> productCartForms) {
         ApiResponse<String> response = new ApiResponse<>();
 
         // check customer exists
@@ -50,11 +51,14 @@ public class CartController {
             return response;
         }
 
-        List<Product> validProducts = productRepository.findAllById(productIds);
-        Set<Long> validProductIds = validProducts.stream().map(Product::getId).collect(Collectors.toSet());
+        Map<Long, Product> productMap = productRepository.findAllById(
+                productCartForms.stream()
+                        .map(ProductCartForm::getProductId)
+                        .collect(Collectors.toSet())
+        ).stream().collect(Collectors.toMap(Product::getId, p -> p));
 
         // product list empty
-        if (validProductIds.isEmpty()) {
+        if (productMap.isEmpty()) {
             response.setResult(false);
             response.setCode(ErrorCode.CART_ERROR_INVALID);
             response.setMessage("Product list cannot be empty.");
@@ -62,8 +66,9 @@ public class CartController {
         }
 
         // check products exists
-        List<Long> invalidProductIds = productIds.stream()
-                .filter(id -> !validProductIds.contains(id))
+        List<Long> invalidProductIds = productCartForms.stream()
+                .map(ProductCartForm::getProductId)
+                .filter(id -> !productMap.containsKey(id))
                 .collect(Collectors.toList());
 
         if (!invalidProductIds.isEmpty()) {
@@ -83,28 +88,32 @@ public class CartController {
 
         // get cartItems by cartId
         List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+
+        List<CartItem> itemsToRemove = cartItems.stream()
+                .filter(cartItem -> !productMap.containsKey(cartItem.getProduct().getId()))
+                .collect(Collectors.toList());
+
+        if (!itemsToRemove.isEmpty()) {
+            cartItemRepository.deleteAll(itemsToRemove);
+            cartItems.removeAll(itemsToRemove);
+        }
+
         Map<Long, CartItem> cartItemMap = cartItems.stream()
                 .collect(Collectors.toMap(ci -> ci.getProduct().getId(), ci -> ci));
 
-
-        for (Product product : validProducts) {
-            // contains product -> quantity + 1
-            if (cartItemMap.containsKey(product.getId())) {
-                CartItem cartItem = cartItemMap.get(product.getId());
-                cartItem.setQuantity(cartItem.getQuantity() + 1);
+        for (ProductCartForm productCartForm : productCartForms) {
+            // contains product -> update quantity
+            if (cartItemMap.containsKey(productCartForm.getProductId())) {
+                CartItem cartItem = cartItemMap.get(productCartForm.getProductId());
+                cartItem.setQuantity(productCartForm.getQuantity());
                 cartItemRepository.save(cartItem);
             } else {
                 // quantity = 1
+                Product product = productMap.get(productCartForm.getProductId());
                 CartItem newCartItem = new CartItem(cart, product);
                 cartItemRepository.save(newCartItem);
             }
         }
-
-        // remove product
-        List<CartItem> itemsToRemove = cartItems.stream()
-                .filter(cartItem -> !validProductIds.contains(cartItem.getProduct().getId()))
-                .collect(Collectors.toList());
-        cartItemRepository.deleteAll(itemsToRemove);
 
         response.setMessage("Cart updated successfully!");
         return response;
