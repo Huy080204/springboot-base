@@ -9,15 +9,10 @@ import com.base.auth.dto.customer.CustomerDto;
 import com.base.auth.form.customer.CreateCustomerForm;
 import com.base.auth.form.customer.UpdateCustomerForm;
 import com.base.auth.mapper.CustomerMapper;
-import com.base.auth.model.Account;
-import com.base.auth.model.Customer;
-import com.base.auth.model.Group;
-import com.base.auth.model.Nation;
+import com.base.auth.model.*;
 import com.base.auth.model.criteria.CustomerCriteria;
-import com.base.auth.repository.AccountRepository;
-import com.base.auth.repository.CustomerRepository;
-import com.base.auth.repository.GroupRepository;
-import com.base.auth.repository.NationRepository;
+import com.base.auth.repository.*;
+import com.base.auth.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,6 +45,9 @@ public class CustomerController extends ABasicController {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     @Autowired
     private CustomerMapper customerMapper;
@@ -117,10 +116,18 @@ public class CustomerController extends ABasicController {
 
         // create customer
         Customer customer = customerMapper.fromCreateCustomer(createCustomerForm);
+
+        // create cart
+        Cart cart = new Cart();
+        cart.setCode(StringUtils.generateUniqueCode(6, cartRepository));
+        cart.setCustomer(customer);
+        cartRepository.save(cart);
+
         customer.setAccount(account);
         customer.setProvince(province);
         customer.setDistrict(district);
         customer.setCommune(commune);
+        customer.setCart(cart);
 
         customerRepository.save(customer);
 
@@ -191,7 +198,7 @@ public class CustomerController extends ABasicController {
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('CUS_L')")
-    public ApiMessageDto<ResponseListDto<List<CustomerDto>>> get(CustomerCriteria criteria, Pageable pageable) {
+    public ApiResponse<ResponseListDto<List<CustomerDto>>> get(CustomerCriteria criteria, Pageable pageable) {
         Page<Customer> pageData = customerRepository.findAll(criteria.getSpecification(), pageable);
 
         ResponseListDto<List<CustomerDto>> responseListDto = new ResponseListDto<>();
@@ -204,7 +211,7 @@ public class CustomerController extends ABasicController {
         responseListDto.setTotalElements(pageData.getTotalElements());
         responseListDto.setTotalPages(pageData.getTotalPages());
 
-        ApiMessageDto<ResponseListDto<List<CustomerDto>>> apiMessageDto = new ApiMessageDto<>();
+        ApiResponse<ResponseListDto<List<CustomerDto>>> apiMessageDto = new ApiResponse<>();
         apiMessageDto.setData(responseListDto);
         apiMessageDto.setMessage("Get list customers success");
         return apiMessageDto;

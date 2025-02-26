@@ -1,36 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-
-    <changeSet id="1" author="huy">
-    </changeSet>
-
-    <changeSet author="Authentication" id="1740475955428-1">
-        <createTable tableName="db_user_base_account">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="username" type="VARCHAR(255)"/>
-            <column name="email" type="VARCHAR(255)"/>
-            <column name="phone" type="VARCHAR(255)"/>
-            <column name="full_name" type="VARCHAR(255)"/>
-            <column name="password" type="VARCHAR(255)"/>
-            <column name="group_id" type="BIGINT"/>
-            <column name="avatar_path" type="VARCHAR(255)"/>
-            <column name="is_super_admin" type="BIT(1)"/>
-            <column name="kind" type="INT">
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Huy Pham (generated)" id="1740506161642-1">
+        <createTable tableName="db_user_base_customer">
+            <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_login" type="datetime"/>
-            <column name="attempt_forget_pwd" type="INT"/>
-            <column name="attempt_login" type="INT"/>
-            <column name="reset_pwd_code" type="VARCHAR(255)"/>
-            <column name="reset_pwd_time" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
             <column name="status" type="INT">
                 <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="birth_day" type="date"/>
+            <column name="gender" type="INT"/>
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_customerPK"/>
+            </column>
+            <column name="commune_id" type="BIGINT"/>
+            <column name="district_id" type="BIGINT"/>
+            <column name="province_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-2">
+        <createTable tableName="db_user_base_nation">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_nationPK"/>
             </column>
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -44,231 +45,50 @@
             <column name="modified_date" type="datetime">
                 <constraints nullable="false"/>
             </column>
-        </createTable>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-2">
-        <createTable tableName="db_user_base_category">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
-            <column name="image" type="VARCHAR(255)"/>
-            <column name="kind" type="INT"/>
             <column name="name" type="VARCHAR(255)"/>
-            <column name="ordering" type="INT"/>
-            <column name="status" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
+            <column name="type" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-3">
-        <createTable tableName="db_user_base_group">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="description" type="VARCHAR(1000)"/>
-            <column name="is_system_role" type="BIT(1)"/>
-            <column name="kind" type="INT"/>
-            <column name="name" type="VARCHAR(255)">
-                <constraints unique="true"/>
-            </column>
-            <column name="status" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-3">
+        <addColumn tableName="db_user_base_account">
+            <column name="customer_account_id" type="bigint"/>
+        </addColumn>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-4">
-        <createTable tableName="db_user_base_news">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="avatar" type="VARCHAR(255)"/>
-            <column name="banner" type="VARCHAR(255)"/>
-            <column name="content" type="TEXT"/>
-            <column name="description" type="TEXT"/>
-            <column name="pin_top" type="INT"/>
-            <column name="title" type="VARCHAR(255)"/>
-            <column name="category_id" type="BIGINT"/>
-            <column name="status" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-4">
+        <addForeignKeyConstraint baseColumnNames="customer_account_id" baseTableName="db_user_base_account" constraintName="FK1eqaf71ndulua0c6cq1jnoq5t" deferrable="false" initiallyDeferred="false" referencedColumnNames="account_id" referencedTableName="db_user_base_customer" validate="true"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-5">
-        <createTable tableName="db_user_base_permission">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="action" type="VARCHAR(255)"/>
-            <column name="description" type="VARCHAR(255)"/>
-            <column name="name" type="VARCHAR(255)">
-                <constraints unique="true"/>
-            </column>
-            <column name="name_group" type="VARCHAR(255)"/>
-            <column name="p_code" type="VARCHAR(255)"/>
-            <column name="show_menu" type="BIT(1)"/>
-            <column name="status" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-5">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="db_user_base_customer" constraintName="FK6x451avisjejxlhu21g7r0t4w" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_account" validate="true"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-6">
-        <createTable tableName="db_user_base_permission_group">
-            <column name="group_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="permission_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-6">
+        <addForeignKeyConstraint baseColumnNames="province_id" baseTableName="db_user_base_customer" constraintName="FKc6mtvs67s281isr4gu3hxvx0w" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-7">
-        <createTable tableName="oauth_access_token">
-            <column name="token_id" type="VARCHAR(255)"/>
-            <column name="token" type="LONGBLOB"/>
-            <column name="authentication_id" type="VARCHAR(255)"/>
-            <column name="user_name" type="VARCHAR(255)"/>
-            <column name="client_id" type="VARCHAR(255)"/>
-            <column name="authentication" type="LONGBLOB"/>
-            <column name="refresh_token" type="VARCHAR(255)"/>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-7">
+        <addForeignKeyConstraint baseColumnNames="district_id" baseTableName="db_user_base_customer" constraintName="FKh4g3hjmxhw8s1oj8ve4281jxk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-8">
-        <createTable tableName="oauth_approvals">
-            <column name="userId" type="VARCHAR(255)"/>
-            <column name="clientId" type="VARCHAR(255)"/>
-            <column name="scope" type="VARCHAR(255)"/>
-            <column name="status" type="VARCHAR(10)"/>
-            <column defaultValueComputed="CURRENT_TIMESTAMP" name="expiresAt" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column defaultValueComputed="CURRENT_TIMESTAMP" name="lastModifiedAt" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-8">
+        <addForeignKeyConstraint baseColumnNames="commune_id" baseTableName="db_user_base_customer" constraintName="FKq60aooc9d5qjwiw2mcsirvgjx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-9">
-        <createTable tableName="oauth_client_details">
-            <column name="client_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="resource_ids" type="VARCHAR(255)"/>
-            <column name="client_secret" type="VARCHAR(255)"/>
-            <column name="scope" type="VARCHAR(255)"/>
-            <column name="authorized_grant_types" type="VARCHAR(255)"/>
-            <column name="web_server_redirect_uri" type="VARCHAR(255)"/>
-            <column name="authorities" type="VARCHAR(255)"/>
-            <column name="access_token_validity" type="INT"/>
-            <column name="refresh_token_validity" type="INT"/>
-            <column name="additional_information" type="VARCHAR(4096)"/>
-            <column name="autoapprove" type="VARCHAR(255)"/>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-9">
+        <dropTable tableName="oauth_access_token"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-10">
-        <createTable tableName="oauth_client_token">
-            <column name="token_id" type="VARCHAR(255)"/>
-            <column name="token" type="LONGBLOB"/>
-            <column name="authentication_id" type="VARCHAR(255)"/>
-            <column name="user_name" type="VARCHAR(255)"/>
-            <column name="client_id" type="VARCHAR(255)"/>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-10">
+        <dropTable tableName="oauth_approvals"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-11">
-        <createTable tableName="oauth_code">
-            <column name="code" type="VARCHAR(255)"/>
-            <column name="authentication" type="LONGBLOB"/>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-11">
+        <dropTable tableName="oauth_client_details"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-12">
-        <createTable tableName="oauth_refresh_token">
-            <column name="token_id" type="VARCHAR(255)"/>
-            <column name="token" type="LONGBLOB"/>
-            <column name="authentication" type="LONGBLOB"/>
-        </createTable>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-12">
+        <dropTable tableName="oauth_client_token"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-13">
-        <createIndex indexName="FKbyfbpwovpsbyp2py381nhhpff" tableName="db_user_base_permission_group">
-            <column name="group_id"/>
-        </createIndex>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-13">
+        <dropTable tableName="oauth_code"/>
     </changeSet>
-    <changeSet author="Authentication" id="1740475955428-14">
-        <createIndex indexName="FKg100mw6idbqfwx72qemfdora2" tableName="db_user_base_account">
-            <column name="group_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-15">
-        <createIndex indexName="FKk59lu60nces75j1n4amm9ipw4" tableName="db_user_base_news">
-            <column name="category_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-16">
-        <createIndex indexName="FKp6wyjpvmwh4e4kpa61v097g5f" tableName="db_user_base_permission_group">
-            <column name="permission_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-17">
-        <createIndex indexName="oauth_refresh_token_id" tableName="oauth_access_token">
-            <column name="token_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-18">
-        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="db_user_base_permission_group" constraintName="FKbyfbpwovpsbyp2py381nhhpff" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="db_user_base_group" validate="true"/>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-19">
-        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="db_user_base_account" constraintName="FKg100mw6idbqfwx72qemfdora2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="db_user_base_group" validate="true"/>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-20">
-        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="db_user_base_news" constraintName="FKk59lu60nces75j1n4amm9ipw4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="db_user_base_category" validate="true"/>
-    </changeSet>
-    <changeSet author="Authentication" id="1740475955428-21">
-        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="db_user_base_permission_group" constraintName="FKp6wyjpvmwh4e4kpa61v097g5f" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="db_user_base_permission" validate="true"/>
+    <changeSet author="Huy Pham (generated)" id="1740506161642-14">
+        <dropTable tableName="oauth_refresh_token"/>
     </changeSet>
 </databaseChangeLog>

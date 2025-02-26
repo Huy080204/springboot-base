@@ -1,0 +1,96 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Huy Pham (generated)" id="1740575304557-1">
+        <createTable tableName="db_user_base_cart">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_cartPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-2">
+        <createTable tableName="db_user_base_cart_item">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_cart_itemPK"/>
+            </column>
+            <column name="quantity" type="INT"/>
+            <column name="cart_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-3">
+        <createTable tableName="db_user_base_product">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_productPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="image" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DOUBLE PRECISION"/>
+            <column name="sell_off" type="INT"/>
+            <column name="short_description" type="TEXT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-4">
+        <addColumn tableName="db_user_base_customer">
+            <column name="cart_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-5">
+        <addUniqueConstraint columnNames="code" constraintName="UC_DB_USER_BASE_CARTCODE_COL" tableName="db_user_base_cart"/>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-6">
+        <addUniqueConstraint columnNames="name" constraintName="UC_DB_USER_BASE_PRODUCTNAME_COL" tableName="db_user_base_product"/>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-7">
+        <addForeignKeyConstraint baseColumnNames="cart_id" baseTableName="db_user_base_customer" constraintName="FK7vvm5nn31hdf38x4i8d4y496e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_cart" validate="true"/>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-8">
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="db_user_base_cart" constraintName="FKau1x071hfkkcbvutgnx61la8i" deferrable="false" initiallyDeferred="false" referencedColumnNames="account_id" referencedTableName="db_user_base_customer" validate="true"/>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-9">
+        <addForeignKeyConstraint baseColumnNames="cart_id" baseTableName="db_user_base_cart_item" constraintName="FKhc6hhc0q9w8tgbgjd7p0bi4pk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_cart" validate="true"/>
+    </changeSet>
+    <changeSet author="Huy Pham (generated)" id="1740575304557-10">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="db_user_base_cart_item" constraintName="FKk3unm2hqllpscan5kjwrb0k69" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_product" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
