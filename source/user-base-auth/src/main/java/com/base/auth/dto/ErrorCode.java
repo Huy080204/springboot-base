@@ -27,6 +27,8 @@ public class ErrorCode {
     public static final String ACCOUNT_ERROR_MERCHANT_LOGIN_WRONG_STORE = "ERROR-ACCOUNT-0010";
     public static final String ACCOUNT_ERROR_MERCHANT_SERVICE_NOT_REGISTER = "ERROR-ACCOUNT-0011";
     public static final String ACCOUNT_ERROR_NOT_ALLOW_DELETE_SUPPER_ADMIN = "ERROR-ACCOUNT-0012";
+    public static final String ACCOUNT_ERROR_NOT_ALLOW_UPDATE_ORDER = "ERROR-ACCOUNT-0013";
+    public static final String ACCOUNT_ERROR_NOT_ALLOW_GET_ORDER = "ERROR-ACCOUNT-0014";
 
 
     /**
@@ -99,11 +101,18 @@ public class ErrorCode {
     public static final String PRODUCT_ERROR_NOT_FOUND = "ERROR-PRODUCT-0001";
 
     /**
-     * Starting error code PRODUCT
+     * Starting error code CART
      *
      */
     public static final String CART_ERROR_NOT_FOUND = "ERROR-CART-0000";
     public static final String CART_ERROR_INVALID = "ERROR-CART-0001";
+
+    /**
+     * Starting error code ORDER
+     *
+     */
+    public static final String ORDER_ERROR_NOT_FOUND = "ERROR-ORDER-0000";
+    public static final String ORDER_ERROR_INVALID = "ERROR-ORDER-0001";
 
     /**
      * Starting error code DATABASE_ERROR
