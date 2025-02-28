@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CartItem {
+public class CartItem extends Auditable<String>{
     @Id
     @GenericGenerator(name = "idGenerator", strategy = "com.base.auth.service.id.IdGenerator")
     @GeneratedValue(generator = "idGenerator")
@@ -30,9 +30,9 @@ public class CartItem {
 
     private Integer quantity;
 
-    public CartItem(Cart cart, Product product) {
+    public CartItem(Cart cart, Product product, Integer quantity) {
         this.cart = cart;
         this.product = product;
-        this.quantity = 1;
+        this.quantity = quantity;
     }
 }

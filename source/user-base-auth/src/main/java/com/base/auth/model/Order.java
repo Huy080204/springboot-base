@@ -10,11 +10,11 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "db_user_base_cart")
+@Table(name = "db_user_base_order")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class Cart extends Auditable<String> {
+public class Order extends Auditable<String> {
     @Id
     @GenericGenerator(name = "idGenerator", strategy = "com.base.auth.service.id.IdGenerator")
     @GeneratedValue(generator = "idGenerator")
@@ -23,13 +23,17 @@ public class Cart extends Auditable<String> {
     @Column(nullable = false, unique = true)
     private String code;
 
+    private Double totalMoney = 0.0;
+
+    private Integer totalSellOff = 0;
+
     @JsonIgnore
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
-    private List<CartItem> cartItems;
+    private Integer state = 1;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderItem> orderItems;
 }

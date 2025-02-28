@@ -13,6 +13,7 @@ import com.base.auth.repository.CustomerRepository;
 import com.base.auth.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,7 @@ public class CartController {
     private CustomerRepository customerRepository;
 
     @PostMapping("/update")
+//    @PreAuthorize("hasRole('CA_U')")
     public ApiResponse<String> updateCart(@RequestBody List<ProductCartForm> productCartForms) {
         ApiResponse<String> response = new ApiResponse<>();
 
@@ -123,9 +125,8 @@ public class CartController {
                 cartItem.setQuantity(productCartForm.getQuantity());
                 cartItemRepository.save(cartItem);
             } else {
-                // quantity = 1
                 Product product = productMap.get(productCartForm.getProductId());
-                CartItem newCartItem = new CartItem(cart, product);
+                CartItem newCartItem = new CartItem(cart, product, productCartForm.getQuantity());
                 cartItemRepository.save(newCartItem);
             }
         }

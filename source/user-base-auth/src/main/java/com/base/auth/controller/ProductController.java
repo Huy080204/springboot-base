@@ -38,8 +38,8 @@ public class ProductController extends ABasicController {
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PRO_C')")
-    public ApiResponse<String> create(@Valid @RequestBody CreateProductForm createProductForm, BindingResult bindingResult) {
-        ApiResponse<String> apiMessageDto = new ApiResponse<>();
+    public ApiMessageDto<String> create(@Valid @RequestBody CreateProductForm createProductForm, BindingResult bindingResult) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
 
         // check name exist
         Product product = productRepository.findByName(createProductForm.getName());
@@ -60,8 +60,8 @@ public class ProductController extends ABasicController {
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PRO_U')")
-    public ApiResponse<String> update(@Valid @RequestBody UpdateProductForm updateProductForm, BindingResult bindingResult) {
-        ApiResponse<String> apiMessageDto = new ApiResponse<>();
+    public ApiMessageDto<String> update(@Valid @RequestBody UpdateProductForm updateProductForm, BindingResult bindingResult) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
         Product product = productRepository.findById(updateProductForm.getId()).orElse(null);
         if (product == null) {
             apiMessageDto.setResult(false);
@@ -85,10 +85,10 @@ public class ProductController extends ABasicController {
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PRO_V')")
-    public ApiResponse<ProductDto> get(@PathVariable("id") Long id) {
+    public ApiMessageDto<ProductDto> get(@PathVariable("id") Long id) {
         Product product = productRepository.findById(id).orElse(null);
         ProductDto productDto = productMapper.fromEntityToDto(product);
-        ApiResponse<ProductDto> apiMessageDto = new ApiResponse<>();
+        ApiMessageDto<ProductDto> apiMessageDto = new ApiMessageDto<>();
         apiMessageDto.setData(productDto);
         apiMessageDto.setMessage("Get product success");
         return apiMessageDto;
@@ -112,8 +112,8 @@ public class ProductController extends ABasicController {
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PRO_D')")
-    public ApiResponse<String> delete(@PathVariable("id") Long id) {
-        ApiResponse<String> apiMessageDto = new ApiResponse<>();
+    public ApiMessageDto<String> delete(@PathVariable("id") Long id) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
         Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             apiMessageDto.setResult(false);
