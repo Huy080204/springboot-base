@@ -36,7 +36,4 @@ public class Product extends Auditable<String> {
 
     private String image;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
-    private List<CartItem> cartItems = new ArrayList<>();
 }
