@@ -27,20 +27,18 @@ public class OrderItem extends Auditable<String> {
 
     private Double singlePrice;
 
-    private Integer sellOff;
+    private Double sellOff;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     public void calculateSinglePrice() {
-        if (product != null && product.getPrice() != null) {
-            double price = product.getPrice() * quantity;
-            double discount = (sellOff != null) ? (price * sellOff / 100.0) : 0;
-            this.singlePrice = price - discount;
-        } else {
-            this.singlePrice = 0.0;
-        }
+        this.singlePrice = product.getPrice() * quantity;
+    }
+
+    public void calculateSellOff() {
+        this.sellOff = product.getPrice() * (product.getSellOff() / 100.0);
     }
 
 }

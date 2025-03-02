@@ -1,24 +1,9 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="Huy Pham (generated)" id="1740710348540-1">
+    <changeSet author="Authentication" id="1740710348540-1">
         <createTable tableName="db_user_base_order">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_orderPK"/>
-            </column>
-            <column name="created_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_by" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="INT">
-                <constraints nullable="false"/>
             </column>
             <column name="code" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -27,13 +12,6 @@
             <column name="total_money" type="DOUBLE PRECISION"/>
             <column name="total_sell_off" type="INT"/>
             <column name="customer_account_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-2">
-        <createTable tableName="db_user_base_order_item">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_order_itemPK"/>
-            </column>
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -48,6 +26,13 @@
             </column>
             <column name="status" type="INT">
                 <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1740710348540-2">
+        <createTable tableName="db_user_base_order_item">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_order_itemPK"/>
             </column>
             <column name="quantity" type="INT"/>
             <column name="sell_off" type="INT"/>
@@ -58,59 +43,74 @@
             <column name="product_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-3">
+    <changeSet author="Authentication" id="1740710348540-3">
         <addColumn tableName="db_user_base_cart_item">
             <column name="created_by" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-4">
+    <changeSet author="Authentication" id="1740710348540-4">
         <addColumn tableName="db_user_base_cart_item">
             <column name="created_date" type="datetime">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-5">
+    <changeSet author="Authentication" id="1740710348540-5">
         <addColumn tableName="db_user_base_cart_item">
             <column name="modified_by" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-6">
+    <changeSet author="Authentication" id="1740710348540-6">
         <addColumn tableName="db_user_base_cart_item">
             <column name="modified_date" type="datetime">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-7">
+    <changeSet author="Authentication" id="1740710348540-7">
         <addColumn tableName="db_user_base_cart_item">
             <column name="status" type="integer">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-8">
+    <changeSet author="Authentication" id="1740710348540-8">
         <addUniqueConstraint columnNames="code" constraintName="UC_DB_USER_BASE_ORDERCODE_COL" tableName="db_user_base_order"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-9">
+    <changeSet author="Authentication" id="1740710348540-9">
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="db_user_base_order_item" constraintName="FK75mm45h0hikk7js0td6p3sl0t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_order" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-10">
+    <changeSet author="Authentication" id="1740710348540-10">
         <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="db_user_base_order_item" constraintName="FKg8yxypd7cdcft7uhjm20r0wgp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_product" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-11">
+    <changeSet author="Authentication" id="1740710348540-11">
         <addForeignKeyConstraint baseColumnNames="customer_account_id" baseTableName="db_user_base_order" constraintName="FKppwuuvk9mrkn5b72gve3k0vt0" deferrable="false" initiallyDeferred="false" referencedColumnNames="account_id" referencedTableName="db_user_base_customer" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-12">
+    <changeSet author="Authentication" id="1740710348540-12">
         <dropForeignKeyConstraint baseTableName="db_user_base_customer" constraintName="FK7vvm5nn31hdf38x4i8d4y496e"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740710348540-19">
+    <changeSet author="Authentication" id="1740710348540-19">
         <dropColumn columnName="cart_id" tableName="db_user_base_customer"/>
     </changeSet>
 </databaseChangeLog>

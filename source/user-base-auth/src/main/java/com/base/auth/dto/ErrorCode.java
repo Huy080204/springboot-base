@@ -115,6 +115,12 @@ public class ErrorCode {
     public static final String ORDER_ERROR_INVALID = "ERROR-ORDER-0001";
 
     /**
+     * Starting error code CUSTOMER ADDRESS
+     *
+     */
+    public static final String CUSTOMER_ADDRESS_ERROR_NOT_FOUND = "ERROR-CUSTOMER_ADDRESS-0000";
+
+    /**
      * Starting error code DATABASE_ERROR
      *
      */

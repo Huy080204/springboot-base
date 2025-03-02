@@ -1,0 +1,83 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1740851171049-1">
+        <createTable tableName="db_user_base_customer_address">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_customer_addressPK"/>
+            </column>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="is_default" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INT"/>
+            <column name="commune_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="district_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="province_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-2">
+        <addColumn tableName="db_user_base_nation">
+            <column name="parent_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-3">
+        <addForeignKeyConstraint baseColumnNames="province_id" baseTableName="db_user_base_customer_address" constraintName="FK392y3ey1i3w1ebaky7knyvarf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-4">
+        <addForeignKeyConstraint baseColumnNames="parent_id" baseTableName="db_user_base_nation" constraintName="FKfm7hrua7hasbf38ienyysm4ts" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-5">
+        <addForeignKeyConstraint baseColumnNames="commune_id" baseTableName="db_user_base_customer_address" constraintName="FKj9r6fddcunudwqhc2w1pr22r3" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-6">
+        <addForeignKeyConstraint baseColumnNames="district_id" baseTableName="db_user_base_customer_address" constraintName="FKkwv00deay260aqi1i7vvjnwu1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-7">
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="db_user_base_customer_address" constraintName="FKsngpssstakvi0llh8vvn9fnuh" deferrable="false" initiallyDeferred="false" referencedColumnNames="account_id" referencedTableName="db_user_base_customer" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-8">
+        <dropForeignKeyConstraint baseTableName="db_user_base_customer" constraintName="FKc6mtvs67s281isr4gu3hxvx0w"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-9">
+        <dropForeignKeyConstraint baseTableName="db_user_base_customer" constraintName="FKh4g3hjmxhw8s1oj8ve4281jxk"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-10">
+        <dropForeignKeyConstraint baseTableName="db_user_base_customer" constraintName="FKq60aooc9d5qjwiw2mcsirvgjx"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-17">
+        <dropColumn columnName="address" tableName="db_user_base_customer"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-18">
+        <dropColumn columnName="commune_id" tableName="db_user_base_customer"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-19">
+        <dropColumn columnName="district_id" tableName="db_user_base_customer"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1740851171049-20">
+        <dropColumn columnName="province_id" tableName="db_user_base_customer"/>
+    </changeSet>
+</databaseChangeLog>

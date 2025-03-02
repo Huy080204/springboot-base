@@ -40,16 +40,4 @@ public class CreateCustomerForm {
     @ApiModelProperty(name = "gender", required = false)
     private Integer gender;
 
-    @ApiModelProperty(name = "address", required = false)
-    private String address;
-
-    @ApiModelProperty(name = "provinceId", required = false)
-    private Long provinceId;
-
-    @ApiModelProperty(name = "districtId", required = false)
-    private Long districtId;
-
-    @ApiModelProperty(name = "communeId", required = false)
-    private Long communeId;
-
 }

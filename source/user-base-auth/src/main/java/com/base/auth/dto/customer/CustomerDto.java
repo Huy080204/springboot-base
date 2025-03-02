@@ -17,12 +17,4 @@ public class CustomerDto {
     private LocalDate birthDay;
     @ApiModelProperty(name = "gender")
     private Integer gender;
-    @ApiModelProperty(name = "address")
-    private String address;
-    @ApiModelProperty(name = "province")
-    private NationDto province;
-    @ApiModelProperty(name = "district")
-    private NationDto district;
-    @ApiModelProperty(name = "commune")
-    private NationDto commune;
 }

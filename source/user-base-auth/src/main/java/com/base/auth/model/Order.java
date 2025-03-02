@@ -25,7 +25,7 @@ public class Order extends Auditable<String> {
 
     private Double totalMoney = 0.0;
 
-    private Integer totalSellOff = 0;
+    private Double totalSellOff = 0.0;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)

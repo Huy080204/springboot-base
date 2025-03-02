@@ -23,4 +23,8 @@ public class UpdateNationForm {
     @NotNull(message = "type cant not be null")
     @ApiModelProperty(name = "type", required = true)
     private Integer type;
+
+    @ApiModelProperty(name = "parentId", required = false)
+    private Long parentId;
+
 }

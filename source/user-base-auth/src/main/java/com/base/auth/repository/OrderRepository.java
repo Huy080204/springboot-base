@@ -17,6 +17,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     boolean existsByCode(String code);
 
-    Page<Order> findAllByCustomerAccountUsername(String username, Specification<Order> spec, Pageable pageable);
+    Page<Order> findAllByCustomerId(Long id, Specification<Order> spec, Pageable pageable);
 
 }
