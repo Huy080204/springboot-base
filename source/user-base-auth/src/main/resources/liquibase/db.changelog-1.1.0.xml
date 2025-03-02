@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="Huy Pham (generated)" id="1740506161642-1">
+    <changeSet author="Authentication" id="1740506161642-1">
         <createTable tableName="db_user_base_customer">
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -28,7 +28,7 @@
             <column name="province_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-2">
+    <changeSet author="Authentication" id="1740506161642-2">
         <createTable tableName="db_user_base_nation">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="db_user_base_nationPK"/>
@@ -53,24 +53,24 @@
             <column name="type" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-3">
+    <changeSet author="Authentication" id="1740506161642-3">
         <addColumn tableName="db_user_base_account">
             <column name="customer_account_id" type="bigint"/>
         </addColumn>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-4">
+    <changeSet author="Authentication" id="1740506161642-4">
         <addForeignKeyConstraint baseColumnNames="customer_account_id" baseTableName="db_user_base_account" constraintName="FK1eqaf71ndulua0c6cq1jnoq5t" deferrable="false" initiallyDeferred="false" referencedColumnNames="account_id" referencedTableName="db_user_base_customer" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-5">
+    <changeSet author="Authentication" id="1740506161642-5">
         <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="db_user_base_customer" constraintName="FK6x451avisjejxlhu21g7r0t4w" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_account" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-6">
+    <changeSet author="Authentication" id="1740506161642-6">
         <addForeignKeyConstraint baseColumnNames="province_id" baseTableName="db_user_base_customer" constraintName="FKc6mtvs67s281isr4gu3hxvx0w" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-7">
+    <changeSet author="Authentication" id="1740506161642-7">
         <addForeignKeyConstraint baseColumnNames="district_id" baseTableName="db_user_base_customer" constraintName="FKh4g3hjmxhw8s1oj8ve4281jxk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
-    <changeSet author="Huy Pham (generated)" id="1740506161642-8">
+    <changeSet author="Authentication" id="1740506161642-8">
         <addForeignKeyConstraint baseColumnNames="commune_id" baseTableName="db_user_base_customer" constraintName="FKq60aooc9d5qjwiw2mcsirvgjx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_user_base_nation" validate="true"/>
     </changeSet>
 </databaseChangeLog>

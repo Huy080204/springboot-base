@@ -4,19 +4,12 @@ import com.base.auth.dto.ApiResponse;
 import com.base.auth.dto.ErrorCode;
 import com.base.auth.dto.ResponseListDto;
 import com.base.auth.dto.nation.NationDto;
-import com.base.auth.form.customer.CreateCustomerForm;
-import com.base.auth.form.customer.UpdateCustomerForm;
 import com.base.auth.form.nation.CreateNationForm;
 import com.base.auth.form.nation.UpdateNationForm;
-import com.base.auth.mapper.CustomerMapper;
 import com.base.auth.mapper.NationMapper;
-import com.base.auth.model.Account;
-import com.base.auth.model.Customer;
 import com.base.auth.model.Nation;
-import com.base.auth.model.criteria.CustomerCriteria;
 import com.base.auth.model.criteria.NationCriteria;
-import com.base.auth.repository.AccountRepository;
-import com.base.auth.repository.CustomerRepository;
+import com.base.auth.repository.CustomerAddressRepository;
 import com.base.auth.repository.NationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +34,34 @@ public class NationController extends ABasicController {
     private NationRepository nationRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerAddressRepository customerAddressRepository;
 
     @Autowired
     private NationMapper nationMapper;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('NAT_C')")
+//    @PreAuthorize("hasRole('NAT_C')")
     public ApiResponse<String> create(@Valid @RequestBody CreateNationForm createNationForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
 
+        // can be null
+        Nation parent = null;
+        if (createNationForm.getParentId() != null) {
+            parent = nationRepository.findById(createNationForm.getParentId()).orElse(null);
+        }
+
         Nation nation = nationMapper.fromCreateNation(createNationForm);
+
+        if (parent != null) {
+            if (parent.getType() >= nation.getType()) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.NATION_ERROR_PARENT_INVALID);
+                apiMessageDto.setMessage("Nation parent invalid");
+                return apiMessageDto;
+            }
+        }
+
+        nation.setParent(parent);
 
         nationRepository.save(nation);
 
@@ -69,7 +79,25 @@ public class NationController extends ABasicController {
             apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
+
         nationMapper.mappingForUpdateNation(updateNationForm, nation);
+
+        // can be null
+        Nation parent = null;
+        if (updateNationForm.getParentId() != null) {
+            parent = nationRepository.findById(updateNationForm.getParentId()).orElse(null);
+        }
+
+        // check nation parent valid
+        if (parent != null) {
+            if (parent.getType() >= nation.getType()) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.NATION_ERROR_PARENT_INVALID);
+                apiMessageDto.setMessage("Nation parent invalid");
+                return apiMessageDto;
+            }
+        }
+        nation.setParent(parent);
 
         apiMessageDto.setMessage("Update nation success");
         return apiMessageDto;
@@ -87,7 +115,7 @@ public class NationController extends ABasicController {
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('NAT_L')")
+//    @PreAuthorize("hasRole('NAT_L')")
     public ApiResponse<ResponseListDto<List<NationDto>>> get(NationCriteria criteria, Pageable pageable) {
         Page<Nation> pageData = nationRepository.findAll(criteria.getSpecification(), pageable);
 
@@ -117,7 +145,7 @@ public class NationController extends ABasicController {
             return apiMessageDto;
         }
 
-        if (customerRepository.countCustomerByNationId(id) > 0) {
+        if (customerAddressRepository.countCustomerByNationId(id) > 0) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.NATION_ERROR_CANT_DELETE_RELATIONSHIP_WITH_ADDRESS);
             return apiMessageDto;

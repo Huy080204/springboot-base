@@ -31,6 +31,16 @@ public class UserBaseConstant {
 
     public static final Integer CATEGORY_KIND_NEWS = 1;
 
+    public static final Integer ORDER_STATE_BOOKING = 1;
+    public static final Integer ORDER_STATE_APPROVED = 2;
+    public static final Integer ORDER_STATE_DELIVERY = 3;
+    public static final Integer ORDER_STATE_DONE = 4;
+    public static final Integer ORDER_STATE_CANCEL = 5;
+
+    public static final Integer CUSTOMER_ADDRESS_TYPE_HOME = 1;
+    public static final Integer CUSTOMER_ADDRESS_TYPE_OFFICE = 2;
+
+
     private UserBaseConstant(){
         throw new IllegalStateException("Utility class");
     }

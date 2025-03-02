@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/v1/cart")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
-public class CartController {
+public class CartController extends ABasicController {
 
     @Autowired
     private CartRepository cartRepository;
@@ -46,20 +46,10 @@ public class CartController {
     public ApiResponse<String> updateCart(@RequestBody List<ProductCartForm> productCartForms) {
         ApiResponse<String> response = new ApiResponse<>();
 
-        // get username from context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            response.setResult(false);
-            response.setCode(ErrorCode.ACCOUNT_ERROR_LOGIN);
-            response.setMessage("User not authenticated");
-            return response;
-        }
-
-        String username = authentication.getName();
+        long customerId = getCurrentUser();
 
         // check customer exists
-        Customer customer = customerRepository.findCustomerByAccountUsername(username)
-                .orElse(null);
+        Customer customer = customerRepository.findById(customerId).orElse(null);
 
         if (customer == null) {
             response.setResult(false);

@@ -5,10 +5,15 @@ import com.base.auth.dto.ApiMessageDto;
 import com.base.auth.dto.ErrorCode;
 import com.base.auth.dto.ResponseListDto;
 import com.base.auth.dto.customer.CustomerDto;
+import com.base.auth.dto.customerAddress.CustomerAddressDto;
 import com.base.auth.form.customer.CreateCustomerForm;
 import com.base.auth.form.customer.UpdateCustomerForm;
+import com.base.auth.form.customerAddress.CreateCustomerAddressForm;
+import com.base.auth.form.customerAddress.UpdateCustomerAddressForm;
+import com.base.auth.mapper.CustomerAddressMapper;
 import com.base.auth.mapper.CustomerMapper;
 import com.base.auth.model.*;
+import com.base.auth.model.criteria.CustomerAddressCriteria;
 import com.base.auth.model.criteria.CustomerCriteria;
 import com.base.auth.repository.*;
 import com.base.auth.utils.StringUtils;
@@ -16,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,10 +67,16 @@ public class CustomerController extends ABasicController {
     private CustomerMapper customerMapper;
 
     @Autowired
+    private CustomerAddressRepository customerAddressRepository;
+
+    @Autowired
+    private CustomerAddressMapper customerAddressMapper;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('CUS_C')")
+//    @PreAuthorize("hasRole('CUS_C')")
     public ApiMessageDto<String> createCustomer(@Valid @RequestBody CreateCustomerForm createCustomerForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
 
@@ -95,40 +107,10 @@ public class CustomerController extends ABasicController {
         account.setGroup(group);
         account.setPhone(createCustomerForm.getPhone());
 
-        // get province
-        Nation province = nationRepository.findByIdAndType(createCustomerForm.getProvinceId(), UserBaseConstant.NATION_KIND_PROVINCE)
-                .orElse(null);
-        if (province == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
-        // get district
-        Nation district = nationRepository.findByIdAndType(createCustomerForm.getDistrictId(), UserBaseConstant.NATION_KIND_DISTRICT)
-                .orElse(null);
-        if (district == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
-        // get commune
-        Nation commune = nationRepository.findByIdAndType(createCustomerForm.getCommuneId(), UserBaseConstant.NATION_KIND_COMMUNE)
-                .orElse(null);
-        if (commune == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
         // create customer
         Customer customer = customerMapper.fromCreateCustomer(createCustomerForm);
 
         customer.setAccount(account);
-        customer.setProvince(province);
-        customer.setDistrict(district);
-        customer.setCommune(commune);
 
         customerRepository.save(customer);
 
@@ -146,12 +128,15 @@ public class CustomerController extends ABasicController {
     @PreAuthorize("hasRole('CUS_U')")
     public ApiMessageDto<String> updateCustomer(@Valid @RequestBody UpdateCustomerForm updateCustomerForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+
+        // check customer exists
         Customer customer = customerRepository.findById(updateCustomerForm.getId()).orElse(null);
         if (customer == null) {
             apiMessageDto.setResult(false);
             apiMessageDto.setCode(ErrorCode.CUSTOMER_ERROR_NOT_FOUND);
             return apiMessageDto;
         }
+
         customerMapper.mappingForUpdateCustomer(updateCustomerForm, customer);
         customer.getAccount().setEmail(updateCustomerForm.getEmail());
         customer.getAccount().setPhone(updateCustomerForm.getPhone());
@@ -159,33 +144,6 @@ public class CustomerController extends ABasicController {
         customer.getAccount().setFullName(updateCustomerForm.getFullName());
         customer.getAccount().setAvatarPath(updateCustomerForm.getAvatarPath());
 
-        Nation province = nationRepository.findByIdAndType(updateCustomerForm.getProvinceId(), UserBaseConstant.NATION_KIND_PROVINCE)
-                .orElse(null);
-        if (province == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
-        Nation district = nationRepository.findByIdAndType(updateCustomerForm.getProvinceId(), UserBaseConstant.NATION_KIND_DISTRICT)
-                .orElse(null);
-        if (district == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
-        Nation commune = nationRepository.findByIdAndType(updateCustomerForm.getProvinceId(), UserBaseConstant.NATION_KIND_COMMUNE)
-                .orElse(null);
-        if (commune == null) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
-            return apiMessageDto;
-        }
-
-        customer.setProvince(province);
-        customer.setDistrict(district);
-        customer.setCommune(commune);
         customerRepository.save(customer);
 
         apiMessageDto.setMessage("Update customer success");
@@ -204,7 +162,7 @@ public class CustomerController extends ABasicController {
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('CUS_L')")
+//    @PreAuthorize("hasRole('CUS_L')")
     public ApiMessageDto<ResponseListDto<List<CustomerDto>>> get(CustomerCriteria criteria, Pageable pageable) {
         Page<Customer> pageData = customerRepository.findAll(criteria.getSpecification(), pageable);
 
@@ -254,6 +212,188 @@ public class CustomerController extends ABasicController {
         customerRepository.deleteById(id);
 
         apiMessageDto.setMessage("Delete customer success");
+        return apiMessageDto;
+    }
+
+    @PostMapping(value = "/create-address", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PreAuthorize("hasRole('CUS_ADR_C')")
+    public ApiMessageDto<String> createCustomerAddress(@Valid @RequestBody CreateCustomerAddressForm createCustomerAddressForm, BindingResult bindingResult) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+
+        long customerId = getCurrentUser();
+
+        // check customer exists
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+
+        if (customer == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.CUSTOMER_ERROR_NOT_FOUND);
+            apiMessageDto.setMessage("Customer not found");
+            return apiMessageDto;
+        }
+
+        // get province
+        Nation province = nationRepository.findByIdAndType(createCustomerAddressForm.getProvinceId(), UserBaseConstant.NATION_KIND_PROVINCE)
+                .orElse(null);
+        if (province == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+
+        // get district
+        Nation district = nationRepository.findByIdAndType(createCustomerAddressForm.getDistrictId(), UserBaseConstant.NATION_KIND_DISTRICT)
+                .orElse(null);
+        if (district == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+
+        // get commune
+        Nation commune = nationRepository.findByIdAndType(createCustomerAddressForm.getCommuneId(), UserBaseConstant.NATION_KIND_COMMUNE)
+                .orElse(null);
+        if (commune == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+            return apiMessageDto;
+        }
+
+        CustomerAddress customerAddress = customerAddressMapper.fromCreateCustomerAddress(createCustomerAddressForm);
+        customerAddress.setCustomer(customer);
+        customerAddress.setProvince(province);
+        customerAddress.setDistrict(district);
+        customerAddress.setCommune(commune);
+
+
+        if (customerAddress.isDefaultAddress()) {
+            // error resetDefaultAddress
+            customerAddressRepository.resetDefaultAddress(customerId);
+        }
+
+        customerAddressRepository.save(customerAddress);
+
+        apiMessageDto.setMessage("Create customer address success");
+        return apiMessageDto;
+    }
+
+    @PostMapping(value = "/update-address", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('CUS_ADR_U')")
+    public ApiMessageDto<String> updateCustomerAddress(@Valid @RequestBody UpdateCustomerAddressForm updateCustomerAddressForm, BindingResult bindingResult) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+
+        CustomerAddress customerAddress = customerAddressRepository.findById(updateCustomerAddressForm.getCustomerAddressId())
+                .orElse(null);
+
+        if (customerAddress == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.CUSTOMER_ADDRESS_ERROR_NOT_FOUND);
+            apiMessageDto.setMessage("Customer address not found");
+            return apiMessageDto;
+        }
+
+        customerAddressMapper.mappingForUpdateCustomerAddress(updateCustomerAddressForm, customerAddress);
+
+        // update province
+        if (!updateCustomerAddressForm.getProvinceId().equals(customerAddress.getProvince().getId())) {
+            Nation province = nationRepository.findByIdAndType(updateCustomerAddressForm.getProvinceId(), UserBaseConstant.NATION_KIND_PROVINCE)
+                    .orElse(null);
+            if (province == null) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+                return apiMessageDto;
+            }
+            customerAddress.setProvince(province);
+        }
+
+        // update district
+        if (!updateCustomerAddressForm.getDistrictId().equals(customerAddress.getDistrict().getId())) {
+            Nation district = nationRepository.findByIdAndType(updateCustomerAddressForm.getDistrictId(), UserBaseConstant.NATION_KIND_DISTRICT)
+                    .orElse(null);
+            if (district == null) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+                return apiMessageDto;
+            }
+            customerAddress.setDistrict(district);
+        }
+
+        // get commune
+        if (!updateCustomerAddressForm.getCommuneId().equals(customerAddress.getCommune().getId())) {
+            Nation commune = nationRepository.findByIdAndType(updateCustomerAddressForm.getCommuneId(), UserBaseConstant.NATION_KIND_COMMUNE)
+                    .orElse(null);
+            if (commune == null) {
+                apiMessageDto.setResult(false);
+                apiMessageDto.setCode(ErrorCode.NATION_ERROR_NOT_FOUND);
+                return apiMessageDto;
+            }
+            customerAddress.setCommune(commune);
+        }
+
+        if (updateCustomerAddressForm.getDefaultAddress()) {
+            customerAddressRepository.resetDefaultAddress(customerAddress.getCustomer().getId());
+        }
+
+        customerAddressRepository.save(customerAddress);
+
+        apiMessageDto.setMessage("Update customer address success");
+        return apiMessageDto;
+    }
+
+    @GetMapping(value = "/list-address", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PreAuthorize("hasRole('CUS_ADR_L')")
+    public ApiMessageDto<ResponseListDto<List<CustomerAddressDto>>> getCustomerAddressList(
+            @Valid @ModelAttribute CustomerAddressCriteria customerAddressCriteria,
+            Pageable pageable
+    ) {
+        Specification<CustomerAddress> specification = customerAddressCriteria.getSpecification();
+        Page<CustomerAddress> customerAddressPage = customerAddressRepository.findAll(specification, pageable);
+
+        ResponseListDto<List<CustomerAddressDto>> result = new ResponseListDto<>(
+                customerAddressMapper.fromEntityToCustomerAddressDtoList(customerAddressPage.getContent()),
+                customerAddressPage.getTotalElements(),
+                customerAddressPage.getTotalPages()
+        );
+        ApiMessageDto<ResponseListDto<List<CustomerAddressDto>>> apiMessageDto = new ApiMessageDto<>();
+        apiMessageDto.setData(result);
+        apiMessageDto.setMessage("Get customer address list successfully");
+
+        return apiMessageDto;
+    }
+
+    @GetMapping(value = "/get-address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('CUS_ADR_V')")
+    public ApiMessageDto<CustomerAddressDto> getCustomerAddressById(@PathVariable Long id) {
+        ApiMessageDto<CustomerAddressDto> apiMessageDto = new ApiMessageDto<>();
+
+        CustomerAddress customerAddress = customerAddressRepository.findById(id).orElseThrow(null);
+        if (customerAddress == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.CUSTOMER_ADDRESS_ERROR_NOT_FOUND);
+            apiMessageDto.setMessage("Customer address not found");
+            return apiMessageDto;
+        }
+        apiMessageDto.setData(customerAddressMapper.fromEntityToCustomerAddressDto(customerAddress));
+        apiMessageDto.setMessage("Get customer address successfully");
+
+        return apiMessageDto;
+    }
+
+    @DeleteMapping(value = "/delete-address/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('CUS_ADR_D')")
+    public ApiMessageDto<String> deleteCustomerAddress(@PathVariable Long id) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+
+        CustomerAddress customerAddress = customerAddressRepository.findById(id).orElseThrow(null);
+        if (customerAddress == null) {
+            apiMessageDto.setResult(false);
+            apiMessageDto.setCode(ErrorCode.CUSTOMER_ADDRESS_ERROR_NOT_FOUND);
+            apiMessageDto.setMessage("Customer address not found");
+            return apiMessageDto;
+        }
+        customerAddressRepository.deleteById(id);
+        apiMessageDto.setMessage("Delete customer address successfully");
+
         return apiMessageDto;
     }
 

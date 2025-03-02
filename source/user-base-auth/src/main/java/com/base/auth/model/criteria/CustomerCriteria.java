@@ -3,14 +3,13 @@ package com.base.auth.model.criteria;
 
 import com.base.auth.model.Account;
 import com.base.auth.model.Customer;
-import com.base.auth.model.Nation;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +20,8 @@ public class CustomerCriteria implements Serializable {
     private String username;
     private String email;
     private String fullName;
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
     private Integer gender;
-    private Integer address;
-    private String province;
-    private String district;
-    private String commune;
 
     public Specification<Customer> getSpecification() {
         return new Specification<Customer>() {
@@ -49,17 +44,11 @@ public class CustomerCriteria implements Serializable {
                 if (!StringUtils.isEmpty(getFullName())) {
                     predicates.add(cb.like(cb.lower(accountJoin.get("fullName")), "%" + getFullName().toLowerCase() + "%"));
                 }
-                if (!StringUtils.isEmpty(getProvince())) {
-                    Join<Customer, Nation> provinceJoin = root.join("province");
-                    predicates.add(cb.like(cb.lower(provinceJoin.get("name")), "%" + getProvince().toLowerCase() + "%"));
+                if (getBirthDay() != null) {
+                    predicates.add(cb.equal(root.get("birthDay"), getBirthDay()));
                 }
-                if (!StringUtils.isEmpty(getDistrict())) {
-                    Join<Customer, Nation> districtJoin = root.join("district");
-                    predicates.add(cb.like(cb.lower(districtJoin.get("name")), "%" + getDistrict().toLowerCase() + "%"));
-                }
-                if (!StringUtils.isEmpty(getCommune())) {
-                    Join<Customer, Nation> communeJoin = root.join("commune");
-                    predicates.add(cb.like(cb.lower(communeJoin.get("name")), "%" + getCommune().toLowerCase() + "%"));
+                if (getGender() != null) {
+                    predicates.add(cb.equal(root.get("gender"), getGender()));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }

@@ -64,20 +64,10 @@ public class OrderController extends ABasicController {
     public ApiResponse<String> create() {
         ApiResponse<String> response = new ApiResponse<>();
 
-        // get username from context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            response.setResult(false);
-            response.setCode(ErrorCode.ACCOUNT_ERROR_LOGIN);
-            response.setMessage("User not authenticated");
-            return response;
-        }
-
-        String username = authentication.getName();
+        long id = getCurrentUser();
 
         // check customer exists
-        Customer customer = customerRepository.findCustomerByAccountUsername(username)
-                .orElse(null);
+        Customer customer = customerRepository.findById(id).orElse(null);
 
         if (customer == null) {
             response.setResult(false);
@@ -99,7 +89,7 @@ public class OrderController extends ABasicController {
         order.setCustomer(customer);
 
         List<OrderItem> orderItems = new ArrayList<>();
-        int totalSellOff = 0;
+        Double totalSellOff = 0.0;
         Double totalMoney = 0.0;
 
         for (CartItem cartItem : cart.getCartItems()) {
@@ -107,8 +97,8 @@ public class OrderController extends ABasicController {
             orderItem.setOrder(order);
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setSellOff(cartItem.getProduct().getSellOff());
             orderItem.calculateSinglePrice();
+            orderItem.calculateSellOff();
 
             orderItems.add(orderItem);
 
@@ -133,24 +123,15 @@ public class OrderController extends ABasicController {
         return response;
     }
 
-    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/change-state", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ORD_U')")
-    public ApiResponse<String> update(@Valid @RequestBody UpdateOrderForm updateOrderForm, BindingResult bindingResult) {
+    public ApiResponse<String> changeState(@Valid @RequestBody UpdateOrderForm updateOrderForm, BindingResult bindingResult) {
         ApiResponse<String> response = new ApiResponse<>();
 
-        // get username from context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            response.setResult(false);
-            response.setCode(ErrorCode.ACCOUNT_ERROR_LOGIN);
-            response.setMessage("User not authenticated");
-            return response;
-        }
+        long id = getCurrentUser();
 
-        String username = authentication.getName();
-
-        Account account = accountRepository.findAccountByUsername(username);
-        if (account.getKind() != UserBaseConstant.USER_KIND_ADMIN) {
+        Account account = accountRepository.findById(id).orElse(null);
+        if (account == null || account.getKind() != UserBaseConstant.USER_KIND_ADMIN) {
             response.setResult(false);
             response.setCode(ErrorCode.ACCOUNT_ERROR_NOT_ALLOW_UPDATE_ORDER);
             response.setMessage("User not allowed");
@@ -175,6 +156,26 @@ public class OrderController extends ABasicController {
         orderRepository.save(order);
 
         response.setMessage("Update order state success");
+        return response;
+    }
+
+    @PutMapping(value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ORD_CL')")
+    public ApiResponse<String> cancelOrder(@PathVariable Long id) {
+        ApiResponse<String> response = new ApiResponse<>();
+
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order == null) {
+            response.setResult(false);
+            response.setCode(ErrorCode.ORDER_ERROR_NOT_FOUND);
+            response.setMessage("Order not found");
+            return response;
+        }
+
+        order.setStatus(UserBaseConstant.ORDER_STATE_CANCEL);
+        orderRepository.save(order);
+
+        response.setMessage("Cancel order state success");
         return response;
     }
 
@@ -205,31 +206,14 @@ public class OrderController extends ABasicController {
         return apiMessageDto;
     }
 
-    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/client-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ORD_L')")
-    public ApiMessageDto<ResponseListDto<List<OrderDto>>> list(OrderCriteria criteria, Pageable pageable) {
+    public ApiMessageDto<ResponseListDto<List<OrderDto>>> listForUser(OrderCriteria criteria, Pageable pageable) {
         ApiMessageDto<ResponseListDto<List<OrderDto>>> apiMessageDto = new ApiMessageDto<>();
 
-        // Lấy username từ context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_LOGIN);
-            apiMessageDto.setMessage("User not authenticated");
-            return apiMessageDto;
-        }
+        long id = getCurrentUser();
 
-        String username = authentication.getName();
-
-        Account account = accountRepository.findAccountByUsername(username);
-        if (account.getKind() != UserBaseConstant.USER_KIND_USER) {
-            apiMessageDto.setResult(false);
-            apiMessageDto.setCode(ErrorCode.ACCOUNT_ERROR_NOT_ALLOW_GET_ORDER);
-            apiMessageDto.setMessage("User not allowed");
-            return apiMessageDto;
-        }
-
-        Page<Order> pageData = orderRepository.findAllByCustomerAccountUsername(username, criteria.getSpecification(), pageable);
+        Page<Order> pageData = orderRepository.findAllByCustomerId(id, criteria.getSpecification(), pageable);
 
         ResponseListDto<List<OrderDto>> responseListDto = new ResponseListDto<>();
         responseListDto.setContent(orderMapper.fromEntityToOrderDtoList(pageData.getContent()));
