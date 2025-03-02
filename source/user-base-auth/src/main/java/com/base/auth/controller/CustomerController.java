@@ -162,7 +162,7 @@ public class CustomerController extends ABasicController {
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('CUS_L')")
+    @PreAuthorize("hasRole('CUS_L')")
     public ApiMessageDto<ResponseListDto<List<CustomerDto>>> get(CustomerCriteria criteria, Pageable pageable) {
         Page<Customer> pageData = customerRepository.findAll(criteria.getSpecification(), pageable);
 
@@ -216,7 +216,7 @@ public class CustomerController extends ABasicController {
     }
 
     @PostMapping(value = "/create-address", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('CUS_ADR_C')")
+    @PreAuthorize("hasRole('CUS_ADR_C')")
     public ApiMessageDto<String> createCustomerAddress(@Valid @RequestBody CreateCustomerAddressForm createCustomerAddressForm, BindingResult bindingResult) {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
 
@@ -267,7 +267,6 @@ public class CustomerController extends ABasicController {
 
 
         if (customerAddress.isDefaultAddress()) {
-            // error resetDefaultAddress
             customerAddressRepository.resetDefaultAddress(customerId);
         }
 
@@ -341,7 +340,7 @@ public class CustomerController extends ABasicController {
     }
 
     @GetMapping(value = "/list-address", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('CUS_ADR_L')")
+    @PreAuthorize("hasRole('CUS_ADR_L')")
     public ApiMessageDto<ResponseListDto<List<CustomerAddressDto>>> getCustomerAddressList(
             @Valid @ModelAttribute CustomerAddressCriteria customerAddressCriteria,
             Pageable pageable

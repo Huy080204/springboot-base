@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+
 
 @Repository
 public interface CustomerAddressRepository extends JpaRepository<CustomerAddress, Long>, JpaSpecificationExecutor<CustomerAddress> {
 
+    @Transactional
     @Modifying
     @Query("UPDATE CustomerAddress SET defaultAddress = false WHERE customer.id = :customerId AND defaultAddress = true")
     void resetDefaultAddress(@Param("customerId") Long customerId);

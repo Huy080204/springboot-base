@@ -40,7 +40,7 @@ public class NationController extends ABasicController {
     private NationMapper nationMapper;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('NAT_C')")
+    @PreAuthorize("hasRole('NAT_C')")
     public ApiResponse<String> create(@Valid @RequestBody CreateNationForm createNationForm, BindingResult bindingResult) {
         ApiResponse<String> apiMessageDto = new ApiResponse<>();
 
@@ -115,7 +115,7 @@ public class NationController extends ABasicController {
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('NAT_L')")
+    @PreAuthorize("hasRole('NAT_L')")
     public ApiResponse<ResponseListDto<List<NationDto>>> get(NationCriteria criteria, Pageable pageable) {
         Page<Nation> pageData = nationRepository.findAll(criteria.getSpecification(), pageable);
 
